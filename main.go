@@ -61,6 +61,8 @@ func processQuery(query string) {
 	case "DROP":
 		if len(parts) > 1 && strings.ToUpper(parts[1]) == "TABLE" {
 			dropTable(parts[2])
+		} else if len(parts) > 1 && strings.ToUpper(parts[1]) == "DATABASE" {
+			dropDatabase(parts[2])
 		} else {
 			fmt.Println("Invalid DROP command")
 		}
@@ -91,6 +93,18 @@ func useDatabase(name string) {
 		log.Fatal(err)
 	}
 	fmt.Println("Using database", name)
+}
+
+func dropDatabase(dbName string) {
+	if currentDB != nil {
+		_ = currentDB.Close()
+		currentDB = nil
+	}
+	err := os.Remove("Dbs/" + dbName + ".db")
+	if err != nil {
+		fmt.Printf("error dropping database: %v", err)
+	}
+	fmt.Printf("Database %s dropped successfully\n", dbName)
 }
 
 func createTable(query string) {
